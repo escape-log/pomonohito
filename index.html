@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="集中タイマー" />
+  <meta name="theme-color" content="#0d0f14" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <title>集中タイマー</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ===== スタート画面 ===== -->
+    <section id="start-screen" class="screen active">
+      <div class="screen-inner">
+        <header class="app-header">
+          <h1 class="app-title">集中タイマー</h1>
+          <p class="app-subtitle">始める前に、今回の目標を宣言しよう</p>
+        </header>
+
+        <div class="goal-input-wrapper">
+          <label for="goal-input" class="goal-label">今回の目標</label>
+          <textarea
+            id="goal-input"
+            class="goal-input"
+            placeholder="例：企画書の第2章を書き上げる"
+            rows="3"
+            maxlength="100"
+          ></textarea>
+          <span id="char-count" class="char-count">0 / 100</span>
+        </div>
+
+        <div class="mode-selector">
+          <button class="mode-btn active" data-minutes="25" id="btn-25">
+            <span class="mode-minutes">25</span>
+            <span class="mode-unit">分</span>
+            <span class="mode-label">ポモドーロ</span>
+          </button>
+          <button class="mode-btn" data-minutes="50" id="btn-50">
+            <span class="mode-minutes">50</span>
+            <span class="mode-unit">分</span>
+            <span class="mode-label">ディープワーク</span>
+          </button>
+        </div>
+
+        <button id="start-btn" class="start-btn" disabled>
+          <span class="btn-icon">▶</span>
+          <span>集中を開始する</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== タイマー画面 ===== -->
+    <section id="timer-screen" class="screen">
+      <div class="screen-inner">
+        <div class="session-goal-display">
+          <span class="session-goal-label">目標</span>
+          <p id="session-goal-text" class="session-goal-text"></p>
+        </div>
+
+        <div class="timer-ring-wrapper">
+          <svg class="ring-svg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+            <circle class="ring-bg" cx="120" cy="120" r="108" />
+            <circle id="ring-progress" class="ring-progress" cx="120" cy="120" r="108" />
+          </svg>
+          <div class="timer-display">
+            <span id="timer-text" class="timer-text">25:00</span>
+            <span id="timer-mode-label" class="timer-mode-label">集中中</span>
+          </div>
+        </div>
+
+        <button id="reset-btn" class="reset-btn">
+          <span class="btn-icon">■</span>
+          <span>中止する</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== 完了画面 ===== -->
+    <section id="done-screen" class="screen">
+      <div class="screen-inner">
+        <div class="done-icon">🎉</div>
+        <h2 class="done-title">集中完了！</h2>
+        <div class="done-goal-wrap">
+          <p class="done-goal-label">達成した目標</p>
+          <p id="done-goal-text" class="done-goal-text"></p>
+        </div>
+        <p class="done-message">お疲れさまでした。<br>しっかり休憩しましょう。</p>
+        <button id="back-btn" class="start-btn">
+          <span class="btn-icon">↩</span>
+          <span>最初に戻る</span>
+        </button>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
