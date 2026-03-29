@@ -66,8 +66,33 @@ function updateTimerUI() {
 // ============================================================
 // 5. タイマーロジック
 // ============================================================
+
+// タイマー終了予定時刻（ms）
+State.endEpoch = 0;
+
+/**
+ * Date.now() と終了予定時刻の差分から残り秒数を算出する。
+ * バックグラウンド中に setInterval がスロットリングされても
+ * 復帰時に正確な値を表示できる。
+ */
+function computeRemaining() {
+  const diff = State.endEpoch - Date.now();
+  return Math.max(0, Math.ceil(diff / 1000));
+}
+
+function tick() {
+  const remaining = computeRemaining();
+  State.remainingSeconds = remaining;
+  updateTimerUI();
+
+  if (remaining <= 0) {
+    finishTimer();
+  }
+}
+
 function startTimer() {
   State.totalSeconds = State.selectedMinutes * 60;
+  State.endEpoch = Date.now() + State.totalSeconds * 1000;
   State.remainingSeconds = State.totalSeconds;
   State.isRunning = true;
 
@@ -79,14 +104,9 @@ function startTimer() {
 
   showScreen(DOM.timerScreen);
 
-  State.timerId = setInterval(() => {
-    if (State.remainingSeconds <= 0) {
-      finishTimer();
-      return;
-    }
-    State.remainingSeconds--;
-    updateTimerUI();
-  }, 1000);
+  // ~250ms 間隔で tick することで、スロットリングされても
+  // フォアグラウンド復帰直後に表示が追いつく
+  State.timerId = setInterval(tick, 250);
 }
 
 function stopTimer() {
@@ -110,6 +130,13 @@ function resetTimer() {
   resetStartScreen();
   showScreen(DOM.startScreen);
 }
+
+// ページが再びアクティブになったとき、即座に表示を同期する
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && State.isRunning) {
+    tick();
+  }
+});
 
 // ============================================================
 // 6. スタート画面のリセット
