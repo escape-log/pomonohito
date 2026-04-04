@@ -90,10 +90,35 @@
           <p class="done-goal-label">達成した目標</p>
           <p id="done-goal-text" class="done-goal-text"></p>
         </div>
-        <p class="done-message">お疲れさまでした。<br>しっかり休憩しましょう。</p>
-        <button id="back-btn" class="start-btn">
+        <p class="done-message">お疲れさまでした。<br>休憩タイマーを選ぼう。</p>
+        <div class="break-selector">
+          <button class="break-btn" id="btn-break-5" data-minutes="5">
+            <span class="break-minutes">5</span>
+            <span class="break-unit">分</span>
+            <span class="break-label">短い休憩</span>
+          </button>
+          <button class="break-btn" id="btn-break-10" data-minutes="10">
+            <span class="break-minutes">10</span>
+            <span class="break-unit">分</span>
+            <span class="break-label">長い休憩</span>
+          </button>
+        </div>
+        <button id="back-btn" class="skip-btn">
           <span class="btn-icon">↩</span>
-          <span>最初に戻る</span>
+          <span>休憩せず戻る</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ===== 休憩完了画面 ===== -->
+    <section id="break-done-screen" class="screen">
+      <div class="screen-inner">
+        <div class="done-icon">☕</div>
+        <h2 class="done-title break-done-title">休憩完了！</h2>
+        <p class="done-message">リフレッシュできましたか？<br>次の集中セッションを始めよう。</p>
+        <button id="break-back-btn" class="start-btn">
+          <span class="btn-icon">▶</span>
+          <span>集中に戻る</span>
         </button>
       </div>
     </section>
