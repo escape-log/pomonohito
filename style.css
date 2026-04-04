@@ -21,6 +21,9 @@
   --success:       #4ecb71;
   --danger:        #f56b6b;
   --danger-dim:    rgba(245, 107, 107, 0.15);
+  --break-accent:      #4ecb71;
+  --break-accent-glow: rgba(78, 203, 113, 0.25);
+  --break-accent-dim:  rgba(78, 203, 113, 0.10);
 
   /* サイズ */
   --radius-sm:     10px;
@@ -446,4 +449,93 @@ html, body {
     width: 200px;
     height: 200px;
   }
+}
+
+/* ---------- 休憩タイマーボタン ---------- */
+.break-selector {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.break-btn {
+  background: var(--break-accent-dim);
+  border: 1.5px solid rgba(78, 203, 113, 0.3);
+  border-radius: var(--radius-md);
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.1s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.break-btn:hover {
+  border-color: var(--break-accent);
+  background: rgba(78, 203, 113, 0.15);
+  box-shadow: 0 0 0 3px var(--break-accent-glow);
+}
+
+.break-btn:active {
+  transform: scale(0.97);
+}
+
+.break-minutes {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--break-accent);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.break-unit {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.break-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+/* ---------- 休憩スキップボタン ---------- */
+.skip-btn {
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-full);
+  padding: 14px 28px;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s, transform 0.1s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.skip-btn:hover {
+  border-color: var(--text-secondary);
+  color: var(--text-secondary);
+}
+
+.skip-btn:active {
+  transform: scale(0.97);
+}
+
+/* ---------- 休憩完了画面とタイトル ---------- */
+.break-done-title {
+  background: linear-gradient(135deg, #a8f5c0 0%, #4ecb71 60%, #2ea84f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
