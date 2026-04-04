@@ -13,6 +13,8 @@ const State = {
   remainingSeconds: 0,   // 残り秒数
   timerId: null,         // setInterval の ID
   isRunning: false,      // タイマー動作中フラグ
+  mode: 'focus',         // 'focus' | 'break'
+  breakMinutes: 5,       // 選択中の休憩時間
 };
 
 // ============================================================
@@ -22,6 +24,7 @@ const DOM = {
   startScreen:     document.getElementById('start-screen'),
   timerScreen:     document.getElementById('timer-screen'),
   doneScreen:      document.getElementById('done-screen'),
+  breakDoneScreen: document.getElementById('break-done-screen'),
 
   goalInput:       document.getElementById('goal-input'),
   charCount:       document.getElementById('char-count'),
@@ -37,6 +40,9 @@ const DOM = {
 
   doneGoalText:    document.getElementById('done-goal-text'),
   backBtn:         document.getElementById('back-btn'),
+  btnBreak5:       document.getElementById('btn-break-5'),
+  btnBreak10:      document.getElementById('btn-break-10'),
+  breakBackBtn:    document.getElementById('break-back-btn'),
 };
 
 // SVGリングの円周（2π × r = 2π × 108 ≈ 678.58）
@@ -90,12 +96,23 @@ function tick() {
   }
 }
 
+// リングの色を切り替えるヘルパー
+function setRingColor(isBreak) {
+  const color = isBreak ? 'var(--break-accent)' : 'var(--accent)';
+  DOM.ringProgress.style.stroke = color;
+  DOM.ringProgress.style.filter = isBreak
+    ? 'drop-shadow(0 0 6px var(--break-accent))'
+    : 'drop-shadow(0 0 6px var(--accent))';
+}
+
 function startTimer() {
+  State.mode = 'focus';
   State.totalSeconds = State.selectedMinutes * 60;
   State.endEpoch = Date.now() + State.totalSeconds * 1000;
   State.remainingSeconds = State.totalSeconds;
   State.isRunning = true;
 
+  setRingColor(false);
   DOM.ringProgress.style.strokeDasharray = RING_CIRCUMFERENCE;
   DOM.ringProgress.style.strokeDashoffset = 0;
   DOM.sessionGoalText.textContent = State.goal;
@@ -104,8 +121,26 @@ function startTimer() {
 
   showScreen(DOM.timerScreen);
 
-  // ~250ms 間隔で tick することで、スロットリングされても
-  // フォアグラウンド復帰直後に表示が追いつく
+  State.timerId = setInterval(tick, 250);
+}
+
+function startBreakTimer(minutes) {
+  State.mode = 'break';
+  State.breakMinutes = minutes;
+  State.totalSeconds = minutes * 60;
+  State.endEpoch = Date.now() + State.totalSeconds * 1000;
+  State.remainingSeconds = State.totalSeconds;
+  State.isRunning = true;
+
+  setRingColor(true);
+  DOM.ringProgress.style.strokeDasharray = RING_CIRCUMFERENCE;
+  DOM.ringProgress.style.strokeDashoffset = 0;
+  DOM.sessionGoalText.textContent = `${minutes}分間 休憩中 ☕`;
+  DOM.timerModeLabel.textContent = `休憩中`;
+  updateTimerUI();
+
+  showScreen(DOM.timerScreen);
+
   State.timerId = setInterval(tick, 250);
 }
 
@@ -117,12 +152,17 @@ function stopTimer() {
 
 function finishTimer() {
   stopTimer();
-  DOM.doneGoalText.textContent = State.goal;
 
-  // ログ機能拡張ポイント: ここでセッションデータを保存できる
-  // saveLog({ goal: State.goal, minutes: State.selectedMinutes, completedAt: new Date() });
-
-  showScreen(DOM.doneScreen);
+  if (State.mode === 'break') {
+    // 休憩完了
+    showScreen(DOM.breakDoneScreen);
+  } else {
+    // 集中完了
+    DOM.doneGoalText.textContent = State.goal;
+    // ログ機能拡張ポイント: ここでセッションデータを保存できる
+    // saveLog({ goal: State.goal, minutes: State.selectedMinutes, completedAt: new Date() });
+    showScreen(DOM.doneScreen);
+  }
 }
 
 function resetTimer() {
@@ -184,14 +224,29 @@ DOM.startBtn.addEventListener('click', () => {
 
 // 中止ボタン
 DOM.resetBtn.addEventListener('click', () => {
-  // 誤タップ防止のため確認ダイアログを表示
-  if (confirm('集中を中止して最初に戻りますか？')) {
+  const msg = State.mode === 'break'
+    ? '休憩を中止して最初に戻りますか？'
+    : '集中を中止して最初に戻りますか？';
+  if (confirm(msg)) {
     resetTimer();
   }
 });
 
-// 完了画面の戻るボタン
+// 完了画面: 休憩せず戻る
 DOM.backBtn.addEventListener('click', () => {
+  showScreen(DOM.startScreen);
+});
+
+// 完了画面: 休憩タイマー選択
+[DOM.btnBreak5, DOM.btnBreak10].forEach(btn => {
+  btn.addEventListener('click', () => {
+    const minutes = parseInt(btn.dataset.minutes, 10);
+    startBreakTimer(minutes);
+  });
+});
+
+// 休憩完了画面: 集中に戻る
+DOM.breakBackBtn.addEventListener('click', () => {
   showScreen(DOM.startScreen);
 });
 
